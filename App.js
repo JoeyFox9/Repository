@@ -8,7 +8,7 @@ function LoginScreen ({navigation}){
 
       return (
         <View style={styles.container}>
-          <Text> My Fishing mApp Login</Text>
+          <Text style={styles.Text}> My Fishing mApp Login</Text>
           <StatusBar style="auto" />
 
           <TextInput
@@ -31,7 +31,7 @@ function LoginScreen ({navigation}){
                 </TouchableOpacity>
                 <TouchableOpacity
                 //style={styles.userBtn}
-                onPress={() => alert("Signing up Please Wait")}
+                onPress={() => navigation.navigate('Signup')}
                 >
                     <Text >No Account Yet? Signup Here</Text>
                 </TouchableOpacity>
@@ -53,6 +53,43 @@ function HomeScreen(){
 
 }
 
+function SignupScreen({navigation}){
+
+      return (
+        <View style={styles.container2}>
+                  <Text> My Fishing mApp Signup</Text>
+                  <StatusBar style="auto" />
+
+                  <TextInput
+                  style={styles.input}
+                  placeholder="Username"
+                  />
+
+                   <TextInput
+                        style={styles.input}
+                        placeholder="Password"
+                        secureTextEntry
+                        />
+
+                    <View style={styles.btnContainer}>
+                        <TouchableOpacity
+                        style={styles.userBtn2}
+                        onPress={() => navigation.navigate('Home')}
+                        >
+                            <Text style={styles.btnTxt}>Signup</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                        //style={styles.userBtn}
+                        onPress={() => navigation.navigate('Login')}
+                        >
+                            <Text >Already Have An Account? Login Here</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                </View>
+              );
+
+}
 
 
 const Stack = createStackNavigator();
@@ -63,6 +100,7 @@ function App() {
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Signup" component={SignupScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -80,12 +118,25 @@ function App() {
 //}
 
 const styles = StyleSheet.create({
+
+    Text: {
+        fontSize: 40,
+        textAlign: "center"
+    },
+
   container: {
     flex: 1,
     backgroundColor: '#0000FF',
     alignItems: 'center',
     justifyContent: 'center',
   },
+
+  container2: {
+      flex: 1,
+      backgroundColor: '#00FF00',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
 
 input: {
     width: "90%",
@@ -103,7 +154,13 @@ input: {
 userBtn: {
 backgroundColor: "#00FF00",
 padding: 15,
-width: "45%"
+width: "45%",
+},
+
+userBtn2: {
+backgroundColor: "#0000FF",
+padding: 15,
+width: "45%",
 },
 
 btnTxt: {
