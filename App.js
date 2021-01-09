@@ -1,9 +1,16 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+//import React from 'react';
+import React, { useState, useEffect } from 'react'; //gallery
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Dimensions } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import MapView from 'react-native-maps';
+import * as ImagePicker from 'expo-image-picker';
+import * as Expo from 'expo'
+import Constants from 'expo-constants';
+import Permissions  from 'expo';
+import { Camera } from 'expo-camera';
+
 
 function LoginScreen ({navigation}){
 
@@ -67,7 +74,7 @@ function HomeScreen({navigation}){
 
             <TextInput
                       style={styles.input}
-                      placeholder="Enter Conditions"
+                      placeholder="Enter Weather Conditions"
                       />
 
         </View>
@@ -126,17 +133,142 @@ function GeoMapScreen(){
 
 }
 
-function GalleryScreen(){
+function GalleryScreen({navigation}){
+
+
 
       return (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
              <Text>Gallery</Text>
+             <View style={styles.btnContainer2}>
+                  <TouchableOpacity
+                        style={styles.userBtn}
+                        onPress={() => navigation.navigate('Camera')}
+                    >
+                        <Text style={styles.btnTxt}>Take Picture</Text>
+                        </TouchableOpacity>
 
-
+                        <TouchableOpacity
+                             style={styles.userBtn}
+                             onPress={() => navigation.navigate('Library')}
+                        >
+                        <Text style={styles.btnTxt}>Choose from Library</Text>
+                  </TouchableOpacity>
+             </View>
 
         </View>
 
       );
+
+}
+
+function CameraScreen(){
+
+      const [hasPermission, setHasPermission] = useState(null);
+        const [cameraRef, setCameraRef] = useState(null)
+        const [type, setType] = useState(Camera.Constants.Type.back);
+
+      useEffect(() => {
+          (async () => {
+            const { status } = await Camera.requestPermissionsAsync();
+            setHasPermission(status === 'granted');
+          })();
+        }, []);
+
+      if (hasPermission === null) {
+          return <View />;
+        }
+        if (hasPermission === false) {
+          return <Text>No access to camera</Text>;
+        }
+        return (
+          <View style={{ flex: 1 }}>
+            <Camera style={{ flex: 1 }} type={type} ref={ref => {
+              setCameraRef(ref) ;
+        }}>
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: 'transparent',
+                  justifyContent: 'flex-end'
+                }}>
+                <TouchableOpacity
+                  style={{
+                    flex: 0.1,
+                    alignSelf: 'flex-end'
+                  }}
+                  onPress={() => {
+                    setType(
+                      type === Camera.Constants.Type.back
+                        ? Camera.Constants.Type.front
+                        : Camera.Constants.Type.back
+                    );
+                  }}>
+                  <Text style={{ fontSize: 18, marginBottom: 10, color: 'white' }}> Flip </Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={{alignSelf: 'center'}} onPress={async() => {
+                  if(cameraRef){
+                    let photo = await cameraRef.takePictureAsync();
+                    console.log('photo', photo);
+                  }
+                }}>
+                  <View style={{
+                     borderWidth: 2,
+                     borderRadius:"50%",
+                     borderColor: 'white',
+                     height: 50,
+                     width:50,
+                     display: 'flex',
+                     justifyContent: 'center',
+                     alignItems: 'center'}}
+                  >
+                    <View style={{
+                       borderWidth: 2,
+                       borderRadius:"50%",
+                       borderColor: 'white',
+                       height: 40,
+                       width:40,
+                       backgroundColor: 'white'}} >
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </Camera>
+          </View>
+        );
+
+
+}
+
+function LibraryScreen(){
+
+       let openImage = async () =>{
+               let permission = await ImagePicker.requestCameraRollPermissionsAsync();
+
+               if(permission.granted === false){
+                   return;
+               }
+
+               let picker = await ImagePicker.launchImageLibraryAsync()
+
+               console.log(picker)
+       }
+
+      return (
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                  <Text>Go to Library</Text>
+                  <View style={styles.btnContainer2}>
+                       <TouchableOpacity
+                             style={styles.userBtn}
+                             onPress={openImage}
+                         >
+
+                         </TouchableOpacity>
+
+                  </View>
+
+             </View>
+            );
 
 }
 
@@ -152,21 +284,13 @@ function App() {
         <Stack.Screen name="Signup" component={SignupScreen} />
         <Stack.Screen name="GeoMap" component={GeoMapScreen} />
         <Stack.Screen name="Gallery" component={GalleryScreen} />
+        <Stack.Screen name="Library" component={LibraryScreen} />
+        <Stack.Screen name="Camera" component={CameraScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
   }
 
-
-
-//type Props = {};
-//export default class App extends React.Component<Props> {
-//    render(){
-//      return (
-//        <AppContainer />
-//      );
-//  }
-//}
 
 const styles = StyleSheet.create({
 
