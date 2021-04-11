@@ -10,9 +10,14 @@ import * as Expo from 'expo'
 import Constants from 'expo-constants';
 import Permissions  from 'expo';
 import { Camera } from 'expo-camera';
+import {Alert} from 'react-native';
+import * as api from "./services/auth";
+import Form from 'react-native-basic-form';
 
 
 function LoginScreen ({navigation}){
+
+
 
       return (
         <View style={styles.container}>
@@ -52,6 +57,22 @@ function LoginScreen ({navigation}){
 
 function HomeScreen({navigation}){
 
+    async function getMoviesFromApi() {
+        console.log('heyo')
+      try {
+        console.log("hell")
+        let response = await fetch('http://10.0.0.6:3000/user/info');
+        let responseJson = await response.json();
+        console.log(responseJson.message);
+        console.log("hello a mhac")
+        return responseJson.message
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    getMoviesFromApi()
+
       return (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
              <Text>Home Screen</Text>
@@ -85,39 +106,58 @@ function HomeScreen({navigation}){
 
 function SignupScreen({navigation}){
 
+    async function onSubmit(state){
+        let response = await api.register(state);
+
+        Alert.alert('Registration Successful',
+        response.message,
+        )
+    }
+    const fields = [
+//            {name: 'firstName', label: 'First Name', required: true},
+//            {name: 'lastName', label: 'Last Name', required: true},
+            {name: 'email', label: 'Email Address', required: true},
+            {name: 'password', label: 'Password', required: true, secure:true}
+        ];
+
+    let formProps = {title: "Register", fields, onSubmit };
+
       return (
         <View style={styles.container2}>
                   <Text> My Fishing mApp Signup</Text>
                   <StatusBar style="auto" />
 
-                  <TextInput
-                  style={styles.input}
-                  placeholder="Username"
-                  />
+                   <Form {...formProps}></Form>
+        </View>
+        );
+//                  <TextInput
+//                  style={styles.input}
+//                  placeholder="Username"
+//                  />
+//
+//                   <TextInput
+//                        style={styles.input}
+//                        placeholder="Password"
+//                        secureTextEntry
+//                        />
+//
+//                    <View style={styles.btnContainer}>
+//                        <TouchableOpacity
+//                        style={styles.userBtn2}
+//                        onPress={() => navigation.navigate('Home')}
+//                        >
+//                            <Text style={styles.btnTxt}>Signup</Text>
+//                        </TouchableOpacity>
+//                        <TouchableOpacity
+//                        //style={styles.userBtn}
+//                        onPress={() => navigation.navigate('Login')}
+//                        >
+//                            <Text >Already Have An Account? Login Here</Text>
+//                        </TouchableOpacity>
+//                    </View>
 
-                   <TextInput
-                        style={styles.input}
-                        placeholder="Password"
-                        secureTextEntry
-                        />
-
-                    <View style={styles.btnContainer}>
-                        <TouchableOpacity
-                        style={styles.userBtn2}
-                        onPress={() => navigation.navigate('Home')}
-                        >
-                            <Text style={styles.btnTxt}>Signup</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                        //style={styles.userBtn}
-                        onPress={() => navigation.navigate('Login')}
-                        >
-                            <Text >Already Have An Account? Login Here</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                </View>
-              );
+                //</View>
+              //);
 
 }
 
